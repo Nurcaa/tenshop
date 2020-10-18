@@ -9,7 +9,7 @@
 // date_default_timezone_set("Asia/Jakarta");
 
 if ($_SESSION['level'] == 1) {
-  require_once 'function.php';
+  require 'function.php';
   $kategori = mysqli_query($con, "SELECT * from kategori");
   $sub_kategori = mysqli_query($con, "SELECT * FROM sub_kategori");
   $produk = mysqli_query($con, "SELECT idproduk, p.nama as produk, deskripsi, k.idkategori, sk.idsub_kategori, file_gambar, harga, jumlah, last_update, pg.idpegawai, nama_kategori, sk.nama as sub_kategori, username, nama_lengkap, email, level  FROM kategori k JOIN sub_kategori sk on k.idkategori=sk.idkategori JOIN produk p on sk.idsub_kategori=p.idsub_kategori join pegawai pg on p.idpegawai=pg.idpegawai");
