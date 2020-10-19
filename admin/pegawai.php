@@ -1,68 +1,65 @@
-<?php 
+<?php
 
-	session_start();
-	if(!isset($_SESSION['login'])) {
-        header('location: ../login.php');
-        exit;
-	}
+session_start();
+if (!isset($_SESSION['login'])) {
+  header('location: ../login.php');
+  print_r(exit);
+}
 
-	if($_SESSION['level'] == 1 ) {
-		require_once '../function.php';
+if ($_SESSION['level'] == 1) {
+  require_once '../function.php';
 
-		$pegawai = mysqli_query($con, "SELECT * FROM pegawai");
+  // $pegawai = mysqli_query($con, "SELECT * FROM pegawai");
+  $pegawai = "SELECT * FROM pegawai";
+  $result = mysqli_query($con, $pegawai);
 
-    $pgw = mysqli_fetch_array($pegawai);
-    if ($pgw['level'] == 1) {
-      $status = 'Admin';
-    } else if ($pgw['level'] == 2) {
-      $status = 'Manager';
-    }
-		
-		if (isset($_POST['simpan'])) {
-			
-      $username = htmlspecialchars($_POST['username']);
-      $nama = htmlspecialchars($_POST['nama']);
-      $email = htmlspecialchars($_POST['email']);
-      $password = htmlspecialchars($_POST['password']);
-      $level = htmlspecialchars($_POST['level']);
+  $pgw = mysqli_fetch_array($result, MYSQLI_BOTH);
+  if ($pgw['level'] == 1) {
+    $status = 'Admin';
+  } else if ($pgw['level'] == 2) {
+    $status = 'Manager';
+  }
 
-        // cek usernmae sudah ada belum
-       $result = mysqli_query($con, "SELECT * FROM pegawai WHERE username = '$username'");
+  if (isset($_POST['simpan'])) {
 
-       if (mysqli_fetch_assoc($result)) {
-         echo "<script>
+    $username = htmlspecialchars($_POST['username']);
+    $nama = htmlspecialchars($_POST['nama']);
+    $email = htmlspecialchars($_POST['email']);
+    $password = htmlspecialchars($_POST['password']);
+    $level = htmlspecialchars($_POST['level']);
+
+    // cek usernmae sudah ada belum
+    $result = mysqli_query($con, "SELECT * FROM pegawai WHERE username = '$username'");
+
+    if (mysqli_fetch_assoc($result)) {
+      echo "<script>
              alert('username sudah terdaftar');
            </script>";
-         return false;
-       }
+      return false;
+    }
 
-			mysqli_query($con, "INSERT INTO pegawai VALUES ('','$username','$nama','$email','$password',$level)");
-			if	(mysqli_affected_rows ($con) > 0) {
-				echo "<script>
+    mysqli_query($con, "INSERT INTO pegawai VALUES ('','$username','$nama','$email','$password',$level)");
+    if (mysqli_affected_rows($con) > 0) {
+      echo "<script>
           alert('User baru berhasil ditambahkan!')
           </script>";
-        echo "<script>location='pegawai.php';</script>";
-			} else {
-        $alert[] = ["danger","User baru <b>gagal</b> ditambahkan!"];
-			}
-		}
+      echo "<script>location='pegawai.php';</script>";
+    } else {
+      $alert[] = ["danger", "User baru <b>gagal</b> ditambahkan!"];
+    }
+  }
+} else {
+  header('location : ../pesan.php');
+  exit;
+}
 
 
 
 
-
-	} else {
-		header('location : ../pesan.php');
-		exit;
-	}
-	
-	
+?>
 
 
- ?>
-
-
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -187,68 +184,68 @@
             <h1 class="h3 mb-0 text-gray-800">Pegawai</h1>
           </div>
 
-		<!-- DataTales Example -->
+          <!-- DataTales Example -->
           <div class="card shadow mb-4">
             <div class="card-header py-3">
               <h6 class="m-0 font-weight-bold text-primary">Daftar Pegawai</h6>
             </div>
 
 
-			<!-- Modal -->
-			<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-			  <div class="modal-dialog" role="document">
-			    <div class="modal-content">
-			      <div class="modal-header">
-			        <h5 class="modal-title" id="exampleModalLabel">Tambah Pegawai</h5>
-			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-			          <span aria-hidden="true">&times;</span>
-			        </button>
-			      </div>
-			      <div class="modal-body">
-			       <form method="post" action="">
-              <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" name="username" placeholder="username" required>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Tambah Pegawai</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form method="post" action="">
+                      <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="username" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="nama">Nama</label>
+                        <input type="text" class="form-control" id="nama" name="nama" placeholder="Nama Lengkap" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="email" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="password" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="level">Level</label>
+                        <select id="level" name="level" class="form-control" required>
+                          <option selected>Choose...</option>
+                          <option value="1">Admin</option>
+                          <option value="2">Manager</option>
+                        </select>
+                      </div>
+
+                      <button type="submit" name="simpan" class="btn btn-primary">Simpan</button>
+                    </form>
+                  </div>
+
+                </div>
               </div>
-              <div class="form-group">
-                <label for="nama">Nama</label>
-                <input type="text" class="form-control" id="nama" name="nama" placeholder="Nama Lengkap" required>
-              </div>
-              <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="email" required>
-              </div>
-              <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="password" required>
-              </div>
-              <div class="form-group">
-                <label for="level">Level</label>
-                <select id="level" name="level" class="form-control" required>
-                  <option selected>Choose...</option>
-                  <option value="1">Admin</option>
-                  <option value="2">Manager</option>
-                </select>
-              </div>
-        
-              <button type="submit" name="simpan" class="btn btn-primary">Simpan</button>
-            </form>
-			      </div>
-			      
-			    </div>
-			  </div>
-			</div>
+            </div>
             <div class="card-body">
-            <!-- Button trigger modal -->
-        			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-        			  Tambah Pegawai
-        			</button>
-              <div class="alert alert-<?php if(isset($alert)) echo $alert[0][0] ?>">
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                Tambah Pegawai
+              </button>
+              <div class="alert alert-<?php if (isset($alert)) echo $alert[0][0] ?>">
                 <?php if (isset($alert)) echo $alert[0][1]; ?>
               </div>
               <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                 
+
                   <thead>
                     <tr>
                       <th>id pegawai</th>
@@ -262,114 +259,115 @@
                   </thead>
                   <tbody>
                   </tbody>
-                    <?php $id=1; ?>
-                    <?php $result=$con->query("SELECT * FROM pegawai"); ?>
-                    <?php while ($row = $result->fetch_assoc()){ $a = 'a'.$row['idpegawai'];?> 
-                      <tr>
+                  <?php $id = 1; ?>
+                  <?php $result = $con->query("SELECT * FROM pegawai"); ?>
+                  <?php while ($row = $result->fetch_assoc()) {
+                    $a = 'a' . $row['idpegawai']; ?>
+                    <tr>
                       <td><?php echo $id; ?></td>
-                      <td><?php echo $row['username'];?></td>
-                      <td><?php echo $row['nama_lengkap'];?></td>
-                      <td><?php echo $row['email'];?></td>
-                      <td><?php echo $row['password'];?></td>
-                      <td><?php echo $row['level'];?></td>
+                      <td><?php echo $row['username']; ?></td>
+                      <td><?php echo $row['nama_lengkap']; ?></td>
+                      <td><?php echo $row['email']; ?></td>
+                      <td><?php echo $row['password']; ?></td>
+                      <td><?php echo $row['level']; ?></td>
                       <td>
-                        <a href="detail_pegawai.php?id=<?= $row['idpegawai']?>" class="btn btn-info btn-sm ml-3">Detail</a>
-                        <a href="edit_pegawai.php?id=<?=$row['idpegawai']?>" class="btn btn-success btn-sm ml-3">Edit</a>
-                        <a data-toggle='modal' data-target='#<?=$a ?>'><button type='button' class='btn btn-danger btn-sm ml-3'>Hapus</button></a>
+                        <a href="detail_pegawai.php?id=<?= $row['idpegawai'] ?>" class="btn btn-info btn-sm ml-3">Detail</a>
+                        <a href="edit_pegawai.php?id=<?= $row['idpegawai'] ?>" class="btn btn-success btn-sm ml-3">Edit</a>
+                        <a data-toggle='modal' data-target='#<?= $a ?>'><button type='button' class='btn btn-danger btn-sm ml-3'>Hapus</button></a>
                       </td>
-                      </tr>
+                    </tr>
 
-                        <div class="modal fade" id=<?= $a ?> tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                          <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Pegawai</h5>
-                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                  <span aria-hidden="true">×</span>
-                                </button>
-                              </div>
-                              <div class="modal-body">Hapus <b><?= $row['username'] ?></b>?</div>
-                              <div class="modal-footer">
-                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
-                                <a class="btn btn-primary" href="hapus_pegawai.php?id=<?= $row['idpegawai'] ?>">Hapus</a>
-                              </div>
-                            </div>
+                    <div class="modal fade" id=<?= $a ?> tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Pegawai</h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">×</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">Hapus <b><?= $row['username'] ?></b>?</div>
+                          <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
+                            <a class="btn btn-primary" href="hapus_pegawai.php?id=<?= $row['idpegawai'] ?>">Hapus</a>
                           </div>
                         </div>
+                      </div>
+                    </div>
 
 
-                      <?PHP $id++; ?>
-                      <?php } ?> 
-                <?php
-                echo 'Total Rows = '.$result->num_rows; 
-                $result->free(); 
-                $con->close(); 
-                ?> 
+                    <?PHP $id++; ?>
+                  <?php } ?>
+                  <?php
+                  echo 'Total Rows = ' . $result->num_rows;
+                  $result->free();
+                  $con->close();
+                  ?>
                   </tbody>
                 </table>
               </div>
             </div>
-          </div>       	
+          </div>
+
+        </div>
+        <!-- End of Main Content -->
+
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white">
+          <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+              <span>Copyright &copy; Ten's Shop 2019</span>
+            </div>
+          </div>
+        </footer>
+        <!-- End of Footer -->
 
       </div>
-      <!-- End of Main Content -->
+      <!-- End of Content Wrapper -->
 
-      <!-- Footer -->
-      <footer class="sticky-footer bg-white">
-        <div class="container my-auto">
-          <div class="copyright text-center my-auto">
-            <span>Copyright &copy; Ten's Shop 2019</span>
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+            <a class="btn btn-primary" href="../logout.php">Logout</a>
           </div>
         </div>
-      </footer>
-      <!-- End of Footer -->
-
-    </div>
-    <!-- End of Content Wrapper -->
-
-  </div>
-  <!-- End of Page Wrapper -->
-
-  <!-- Scroll to Top Button-->
-  <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-  </a>
-
-  <!-- Logout Modal-->
-  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="../logout.php">Logout</a>
-        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Bootstrap core JavaScript-->
-  <script src="../vendor/jquery/jquery.min.js"></script>
-  <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap core JavaScript-->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Core plugin JavaScript-->
-  <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
 
-  <!-- Custom scripts for all pages-->
-  <script src="../js/sb-admin-2.min.js"></script>
+    <!-- Custom scripts for all pages-->
+    <script src="../js/sb-admin-2.min.js"></script>
 
-  <!-- Page level plugins -->
-  <script src="../vendor/chart.js/Chart.min.js"></script>
+    <!-- Page level plugins -->
+    <script src="../vendor/chart.js/Chart.min.js"></script>
 
-  <!-- Page level custom scripts -->
-  <script src="../js/demo/chart-area-demo.js"></script>
-  <script src="../js/demo/chart-pie-demo.js"></script>
+    <!-- Page level custom scripts -->
+    <script src="../js/demo/chart-area-demo.js"></script>
+    <script src="../js/demo/chart-pie-demo.js"></script>
 
 </body>
 
