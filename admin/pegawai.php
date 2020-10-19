@@ -1,9 +1,12 @@
 <?php
-
 session_start();
+?>
+
+<?php
+//session_start();
 if (!isset($_SESSION['login'])) {
   header('location: ../login.php');
-  print_r(exit);
+  exit;
 }
 
 if ($_SESSION['level'] == 1) {
